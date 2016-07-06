@@ -7,6 +7,7 @@
 //
 
 #import "IPDFCameraViewController.h"
+#import "IPDFCameraViewOverlay.h"
 
 #import <AVFoundation/AVFoundation.h>
 #import <CoreMedia/CoreMedia.h>
@@ -47,6 +48,11 @@
     
     BOOL _isCapturing;
     dispatch_queue_t _captureQueue;
+    
+    OverlayFrame * overlayFrameView;
+    UIColor * borderDetectionFrameColor;
+    UIColor * borderDetectionFrameFillColor;
+    
 }
 
 - (void)awakeFromNib
@@ -138,6 +144,36 @@
     }
     
     [session commitConfiguration];
+    
+    // setup for overlay
+    
+    if(_refreshInterval <= 0)
+        _refreshInterval = 0.5;
+    
+    overlayFrameView = [[OverlayFrame alloc] init];
+    [overlayFrameView setBackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:0]];
+    [self insertSubview:overlayFrameView atIndex:1];
+    
+}
+
+-(void)setOverlayRenderBlock:(RenderBlock) block
+{
+    [overlayFrameView setOverlayRenderHandler:block];
+}
+
+-(void)setBorderDetectionFrameStyle:(UIColor *)fill border:(UIColor *)borderColor borderWidth:(float) width;
+{
+    if(overlayFrameView != nil)
+    {
+        [overlayFrameView setFrameStyle:fill borderColor:borderColor borderWidth:width];
+    }
+}
+
+-(void)setEnableBorderDetection:(BOOL)enable
+{
+    _enableBorderDetection = enable;
+    [overlayFrameView setHidden:!enable];
+    
 }
 
 - (void)setCameraViewType:(IPDFCameraViewType)cameraViewType
@@ -150,7 +186,7 @@
     _cameraViewType = cameraViewType;
     
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_refreshInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^
     {
         [viewWithBlurredBackground removeFromSuperview];
     });
@@ -158,6 +194,7 @@
 
 -(void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
 {
+    
     if (self.forceStop) return;
     if (_isStopped || _isCapturing || !CMSampleBufferIsValid(sampleBuffer)) return;
     
@@ -176,6 +213,7 @@
     
     if (self.isBorderDetectionEnabled)
     {
+        
         if (_borderDetectFrame)
         {
             _borderDetectLastRectangleFeature = [self biggestRectangleInRectangles:[[self highAccuracyRectangleDetector] featuresInImage:image]];
@@ -186,10 +224,11 @@
         {
             _imageDedectionConfidence += .5;
             
-            image = [self drawHighlightOverlayForPoints:image topLeft:_borderDetectLastRectangleFeature.topLeft topRight:_borderDetectLastRectangleFeature.topRight bottomLeft:_borderDetectLastRectangleFeature.bottomLeft bottomRight:_borderDetectLastRectangleFeature.bottomRight];
+            [overlayFrameView updateFrame:_borderDetectLastRectangleFeature rawRect:image.extent.size];
         }
         else
         {
+            [overlayFrameView clearOverlayFrame];
             _imageDedectionConfidence = 0.0f;
         }
     }
@@ -228,24 +267,17 @@
     _borderDetectFrame = YES;
 }
 
-- (CIImage *)drawHighlightOverlayForPoints:(CIImage *)image topLeft:(CGPoint)topLeft topRight:(CGPoint)topRight bottomLeft:(CGPoint)bottomLeft bottomRight:(CGPoint)bottomRight
-{
-    CIImage *overlay = [CIImage imageWithColor:[CIColor colorWithRed:1 green:0 blue:0 alpha:0.6]];
-    overlay = [overlay imageByCroppingToRect:image.extent];
-    overlay = [overlay imageByApplyingFilter:@"CIPerspectiveTransformWithExtent" withInputParameters:@{@"inputExtent":[CIVector vectorWithCGRect:image.extent],@"inputTopLeft":[CIVector vectorWithCGPoint:topLeft],@"inputTopRight":[CIVector vectorWithCGPoint:topRight],@"inputBottomLeft":[CIVector vectorWithCGPoint:bottomLeft],@"inputBottomRight":[CIVector vectorWithCGPoint:bottomRight]}];
-    
-    return [overlay imageByCompositingOverImage:image];
-}
-
 - (void)start
 {
     _isStopped = NO;
     
     [self.captureSession startRunning];
     
-    _borderDetectTimeKeeper = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(enableBorderDetectFrame) userInfo:nil repeats:YES];
+    _borderDetectTimeKeeper = [NSTimer scheduledTimerWithTimeInterval:_refreshInterval target:self selector:@selector(enableBorderDetectFrame) userInfo:nil repeats:YES];
     
     [self hideGLKView:NO completion:nil];
+    
+    overlayFrameView.frame = _glkView.frame;
 }
 
 - (void)stop
@@ -313,6 +345,14 @@
     }
 }
 
+- (void)captureImageForPostEditWithCompletionHander:(void(^)(NSString * imgPath, NSArray * features))handler
+{
+    [self captureImageWithCompletionHander:^(NSString *imageFilePath) {
+        NSArray * lastFeatures = [[NSArray alloc] initWithArray:[overlayFrameView getLastFeatures]];
+        handler(imageFilePath, lastFeatures);
+    }];
+}
+
 - (void)captureImageWithCompletionHander:(void(^)(NSString *imageFilePath))completionHandler
 {
     dispatch_suspend(_captureQueue);
@@ -358,7 +398,7 @@
                  enhancedImage = [self filteredImageUsingContrastFilterOnImage:enhancedImage];
              }
              
-             if (weakSelf.isBorderDetectionEnabled && rectangleDetectionConfidenceHighEnough(_imageDedectionConfidence))
+             if (weakSelf.isBorderDetectionEnabled && rectangleDetectionConfidenceHighEnough(_imageDedectionConfidence) && _postEdit != YES)
              {
                  CIRectangleFeature *rectangleFeature = [self biggestRectangleInRectangles:[[self highAccuracyRectangleDetector] featuresInImage:enhancedImage]];
                  

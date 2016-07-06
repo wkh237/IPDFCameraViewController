@@ -14,6 +14,7 @@
 		22F8A01A1A6279030099DC69 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 22F8A0191A6279030099DC69 /* Images.xcassets */; };
 		22F8A01D1A6279030099DC69 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22F8A01B1A6279030099DC69 /* LaunchScreen.xib */; };
 		22F8A0351A62799E0099DC69 /* IPDFCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F8A0341A62799E0099DC69 /* IPDFCameraViewController.m */; };
+		A1EDBEAD1D2D071300EA7C73 /* IPDFCameraViewOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = A1EDBEAC1D2D071300EA7C73 /* IPDFCameraViewOverlay.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,8 @@
 		22F8A01C1A6279030099DC69 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		22F8A0331A62799E0099DC69 /* IPDFCameraViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPDFCameraViewController.h; sourceTree = "<group>"; };
 		22F8A0341A62799E0099DC69 /* IPDFCameraViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IPDFCameraViewController.m; sourceTree = "<group>"; };
+		A1EDBEAB1D2D071300EA7C73 /* IPDFCameraViewOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPDFCameraViewOverlay.h; sourceTree = "<group>"; };
+		A1EDBEAC1D2D071300EA7C73 /* IPDFCameraViewOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IPDFCameraViewOverlay.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +90,8 @@
 		22F8A0321A6279850099DC69 /* IPDFCameraViewController */ = {
 			isa = PBXGroup;
 			children = (
+				A1EDBEAB1D2D071300EA7C73 /* IPDFCameraViewOverlay.h */,
+				A1EDBEAC1D2D071300EA7C73 /* IPDFCameraViewOverlay.m */,
 				22F8A0331A62799E0099DC69 /* IPDFCameraViewController.h */,
 				22F8A0341A62799E0099DC69 /* IPDFCameraViewController.m */,
 			);
@@ -167,6 +172,7 @@
 				22F8A0151A6279030099DC69 /* ViewController.m in Sources */,
 				22F8A0121A6279030099DC69 /* AppDelegate.m in Sources */,
 				22F8A00F1A6279030099DC69 /* main.m in Sources */,
+				A1EDBEAD1D2D071300EA7C73 /* IPDFCameraViewOverlay.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,6 +313,7 @@
 				22F8A02E1A6279040099DC69 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
