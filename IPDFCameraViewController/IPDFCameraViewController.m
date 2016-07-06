@@ -156,7 +156,7 @@
     
 }
 
--(void)setOverlayRenderBlock:(RenderBlock) block
+-(void)overrideOverlayRenderMethod:(void(^)(CGContextRef ctx, CGRect rect, CGPoint topLeft, CGPoint topRight, CGPoint bottomLeft, CGPoint bottomRight)) block
 {
     [overlayFrameView setOverlayRenderHandler:block];
 }

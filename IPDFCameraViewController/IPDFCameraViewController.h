@@ -14,8 +14,6 @@ typedef NS_ENUM(NSInteger,IPDFCameraViewType)
     IPDFCameraViewTypeNormal
 };
 
-typedef void(^RenderBlock)(CGContextRef ctx, CGRect rect, CGPoint topLeft, CGPoint topRight, CGPoint bottomLeft, CGPoint bottomRight);
-
 @interface IPDFCameraViewController : UIView
 
 - (void)setupCameraView;
@@ -28,10 +26,11 @@ typedef void(^RenderBlock)(CGContextRef ctx, CGRect rect, CGPoint topLeft, CGPoi
 
 @property (nonatomic, assign) float refreshInterval;
 @property (nonatomic, assign) BOOL postEdit;
-@property (nonatomic, assign) RenderBlock overlayRenderBlock;
+@property (nonatomic, assign) void(^overlayRenderBlock)(CGContextRef ctx, CGRect rect, CGPoint topLeft, CGPoint topRight, CGPoint bottomLeft, CGPoint bottomRight);
 
 @property (nonatomic,assign) IPDFCameraViewType cameraViewType;
 
+- (void)overrideOverlayRenderMethod:(void(^)(CGContextRef ctx, CGRect rect, CGPoint topLeft, CGPoint topRight, CGPoint bottomLeft, CGPoint bottomRight)) block;
 - (void)setEnableBorderDetection:(BOOL)enable;
 - (void)focusAtPoint:(CGPoint)point completionHandler:(void(^)())completionHandler;
 - (void)captureImageWithCompletionHander:(void(^)(NSString *imageFilePath))completionHandler;

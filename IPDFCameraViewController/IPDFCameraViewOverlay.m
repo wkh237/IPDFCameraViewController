@@ -197,12 +197,6 @@
     topRight = CGContextConvertPointToUserSpace(ctx, topRight);
     bottomLeft = CGContextConvertPointToUserSpace(ctx, bottomLeft);
     bottomRight = CGContextConvertPointToUserSpace(ctx, bottomRight);
-
-    if(overlayRenderHandler != nil)
-    {
-        overlayRenderHandler(ctx, rect, topLeft, topRight, bottomLeft, bottomRight);
-        return;
-    }
     
     viewMatrix = CGAffineTransformMake(2*rect.size.width/rawImageRect.width, 0, 0, -2*rect.size.height/rawImageRect.height, 0, rect.size.height);
     
@@ -210,6 +204,12 @@
     topRight = CGPointApplyAffineTransform(topRight, viewMatrix);
     bottomLeft = CGPointApplyAffineTransform(bottomLeft, viewMatrix);
     bottomRight = CGPointApplyAffineTransform(bottomRight, viewMatrix);
+    
+    if(overlayRenderHandler != nil)
+    {
+        overlayRenderHandler(ctx, rect, topLeft, topRight, bottomLeft, bottomRight);
+        return;
+    }
     
     BOOL draw = [self pointFilter:@[ [NSValue valueWithCGPoint:topLeft], [NSValue valueWithCGPoint:topRight], [NSValue valueWithCGPoint:bottomLeft], [NSValue valueWithCGPoint:bottomRight] ]];
 

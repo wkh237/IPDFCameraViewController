@@ -13,11 +13,9 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-typedef void(^RenderBlock)(CGContextRef ctx, CGRect rect, CGPoint topLeft, CGPoint topRight, CGPoint bottomLeft, CGPoint bottomRight);
-
 @interface OverlayFrame : UIView
 
-@property (nonatomic, assign) RenderBlock overlayRenderHandler;
+@property (nonatomic, assign) void(^overlayRenderHandler)(CGContextRef ctx, CGRect rect, CGPoint topLeft, CGPoint topRight, CGPoint bottomLeft, CGPoint bottomRight);
 
 -(void) updateFrame:(CIRectangleFeature *)rectFeature rawRect:(CGSize)rawRect;
 -(void) clearOverlayFrame;
