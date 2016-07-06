@@ -32,6 +32,26 @@
     
     [self.cameraViewController setupCameraView];
     [self.cameraViewController setEnableBorderDetection:YES];
+    
+    // set border detection frame style
+    [self.cameraViewController setBorderDetectionFrameStyle:[UIColor colorWithRed:1 green:1 blue:1 alpha:0.3]
+                                                     border:[UIColor colorWithRed:1 green:1 blue:1 alpha:1]
+                                                borderWidth:3];
+    // set border detection interval
+    [self.cameraViewController setRefreshInterval:0.2];
+    
+    // override detection frame render method
+//    [self.cameraViewController overrideOverlayRenderMethod:^(CGContextRef ctx, CGRect rect, CGPoint topLeft, CGPoint topRight, CGPoint bottomLeft, CGPoint bottomRight) {
+//        CGContextBeginPath(ctx);
+//        CGContextMoveToPoint(ctx, topLeft.x, topLeft.y);
+//        CGContextAddLineToPoint(ctx, topRight.x, topRight.y);
+//        CGContextAddLineToPoint(ctx, bottomRight.x, bottomRight.y);
+//        CGContextAddLineToPoint(ctx, bottomLeft.x, bottomLeft.y);
+//        CGContextSetRGBStrokeColor(ctx, 1, 0, 0, 1);
+//        CGContextClosePath(ctx);
+//        CGContextDrawPath(ctx, kCGPathFillStroke);
+//    }];
+    
     [self updateTitleLabel];
 }
 
