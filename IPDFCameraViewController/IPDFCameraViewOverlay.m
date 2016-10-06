@@ -198,7 +198,9 @@
     bottomLeft = CGContextConvertPointToUserSpace(ctx, bottomLeft);
     bottomRight = CGContextConvertPointToUserSpace(ctx, bottomRight);
     
-    viewMatrix = CGAffineTransformMake(2*rect.size.width/rawImageRect.width, 0, 0, -2*rect.size.height/rawImageRect.height, 0, rect.size.height);
+    CGFloat xOffset = (((rect.size.width / rect.size.height) * rawImageRect.width) - rect.size.width)/2;
+    
+    viewMatrix = CGAffineTransformMake(2*rect.size.height/rawImageRect.height, 0, 0, -2*rect.size.height/rawImageRect.height, -1*xOffset, rect.size.height);
     
     topLeft = CGPointApplyAffineTransform(topLeft, viewMatrix);
     topRight = CGPointApplyAffineTransform(topRight, viewMatrix);
